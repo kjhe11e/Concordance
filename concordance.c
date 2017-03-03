@@ -4,6 +4,31 @@
 */
 
 #include <stdio.h>
+#include <string.h>
+
+#define BUFFER_SIZE 1024
+
+void tokenizeFile(FILE* inFile) {
+  printf("Tokenizing file...\n");
+  const char *delimiter_chars = " \n";
+  char buffer[BUFFER_SIZE];
+  char *lastToken;
+  if(inFile == NULL) {
+    printf("Input file is NULL... exiting.\n");
+  }
+  else {
+    while(fgets(buffer, BUFFER_SIZE, inFile) != NULL) {
+      lastToken = strtok(buffer, delimiter_chars);
+      while(lastToken != NULL) {
+        printf("%s\n", lastToken);
+        lastToken = strtok(NULL, delimiter_chars);
+      }
+    }
+    if(ferror(inFile)) {
+      perror("The following error occurred\n");
+    }
+  }
+}
 
 int main(int argc, char *argv[]) {
   printf("Concordance program.\n");
@@ -22,6 +47,7 @@ int main(int argc, char *argv[]) {
   if(inFile != NULL) {
     printf("Open successful\n");
     // call method(s) to do analysis here...
+    tokenizeFile(inFile);
     fclose(inFile);
   }
   else {
