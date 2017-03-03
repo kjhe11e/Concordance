@@ -5,8 +5,35 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <ctype.h>  // isupper, tolower, etc...
 
 #define BUFFER_SIZE 1024
+
+typedef struct numberNode {
+  int number;
+  struct numberNode *link;
+} numberNode;
+
+typedef struct wordNode {
+  char *word;
+  numberNode *numberHead;
+  numberNode *numberTail;
+  struct wordNode *link;
+} wordNode;
+
+wordNode *concordance = NULL;
+
+wordNode *makeWordNode(char* w) {
+  wordNode *tmp;
+  tmp = (wordNode *) malloc(sizeof(wordNode));
+  tmp->word = (char *) malloc(strlen(w));
+  strcpy(tmp->word, w);
+  tmp->numberHead = NULL;
+  tmp->numberTail = NULL;
+  tmp->link = NULL;
+  return tmp;
+}
 
 void tokenizeFile(FILE* inFile) {
   printf("Tokenizing file...\n");
