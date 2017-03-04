@@ -64,7 +64,6 @@ int tokenizeFile(FILE* inFile, char *word) {
 }
 
 int getWord(char *w, FILE* inFile) {
-
   char c;
   while((c = fgetc(inFile)) != EOF && !isalpha(c));
   if(c == EOF) {
@@ -80,16 +79,57 @@ int getWord(char *w, FILE* inFile) {
   }
 }
 
-// looks through list of words for the word specified by wordBuffer.
-// if word is not found, then a new wordNode is created and inserted into
-// the list of words. a pointer to the wordNode (newly created or already
+void printWord(wordNode *w) {
+  numberNode *n;
+  printf("%s", w->word);
+  for(n = w->numberHead; n; n = n->link) {
+    printf(" %d", n->number);
+  }
+  printf("\n");
+}
+
+void printConcordance(void) {
+  wordNode *w;
+  for(w = concordance; w != NULL; w = w->link) {
+    printWord(w);
+  }
+}
+
+// Looks through list of words for the word specified by wordBuffer.
+// Ff word is not found, then a new wordNode is created and inserted into
+// the list of words. A pointer to the wordNode (newly created or already
 // existing) is returned.
 wordNode *findWord(char *wordBuffer) {
-  wordNode* tmp = makeWordNode(wordBuffer);
-  concordance = tmp;
-  printf("Found word: %s\n", concordance->word);
+  if(concordance == NULL) {
+    printf("Concordance is NULL\n");
+    concordance = makeWordNode(wordBuffer);
+    printf("Concordance is now: %s\n", concordance->word);
+    return concordance;
+  }
+  else {
+    wordNode *tmp;
+    int found = 0;
+    for(tmp = concordance; tmp != NULL; tmp = tmp->link) {
+      //find here
+      if(strcmp(tmp->word, wordBuffer) == 0) {
+        printf("Found wordNode: %s\n", tmp->word);
+        found = 1;
+        return tmp;
+      }
+    }
+    if(found == 0) {
+      printf("%s not found. Creating...\n", wordBuffer);
+      wordNode *tmp;
+      tmp = concordance;
+      while(tmp->link != NULL) {
+        tmp = tmp->link;
+      }
 
-  return tmp;
+      tmp->link = makeWordNode(wordBuffer);
+    }
+    printConcordance();
+    return concordance;
+  }
 }
 
 numberNode *makeNumberNode(int n) {
@@ -111,22 +151,6 @@ void insertNumber(wordNode *w, int n) {
   }
 }
 
-void printWord(wordNode *w) {
-  numberNode *n;
-  printf("%s", w->word);
-  for(n = w->numberHead; n; n = n->link) {
-    printf(" %d", n->number);
-  }
-  printf("\n");
-}
-
-void printConcordance(void) {
-  wordNode *w;
-  for(w = concordance; w != NULL; w = w->link) {
-    printWord(w);
-  }
-}
-
 int main(int argc, char *argv[]) {
   printf("Concordance program.\n");
   int i = 0;
@@ -143,17 +167,13 @@ int main(int argc, char *argv[]) {
   inFile = fopen(inputFile, "r");
   if(inFile != NULL) {
     printf("Open successful\n");
-    // call method(s) to do analysis here...
-    //tokenizeFile(inFile);
-
     printf("======================================\n");
+
     char wordBuffer[1024];
     int wordNumber = 0; // count words as they are read
 
-
     while(getWord(wordBuffer, inFile)) {
       wordNumber++;
-      printf("WordNumber count is: %d\n", wordNumber);
       insertNumber(findWord(wordBuffer), wordNumber);
     }
 
