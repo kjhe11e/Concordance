@@ -63,18 +63,25 @@ int tokenizeFile(FILE* inFile, char *word) {
   }
 }
 
-int getWord(char *w, FILE* inFile) {
+int getWord(char *w, FILE* inFile, int *lineNumber) {
   char c;
-  while((c = fgetc(inFile)) != EOF && !isalpha(c));
+  // skip non-alphabetic chars, look for newlines to update lineNumber
+  while((c = fgetc(inFile)) != EOF && !isalpha(c)) {
+    if(c == '\n') {
+      (*lineNumber)++;
+      printf("LineNumber is %d\n", *lineNumber);
+    }
+  }
   if(c == EOF) {
     return false;
   }
   else {
     *w++ = tolower(c);
+    // get alphabetic chars
     while((c = fgetc(inFile)) != EOF && isalpha(c)) {
       *w++ = tolower(c);
     }
-    *w = '\0';
+    *w = '\0';  // null-terminate string
     return true;
   }
 }
@@ -104,13 +111,13 @@ numberNode *makeNumberNode(int n) {
   return tmp;
 }
 
-void insertNumber(wordNode *w, int n) {
+void insertNumber(wordNode *w, int *n) {
   if(w->numberHead != NULL) {
-    w->numberTail->link = makeNumberNode(n);
+    w->numberTail->link = makeNumberNode(*n);
     w->numberTail = w->numberTail->link;
   }
   else {
-    w->numberHead = w->numberTail = makeNumberNode(n);
+    w->numberHead = w->numberTail = makeNumberNode(*n);
   }
 }
 
@@ -173,9 +180,13 @@ int main(int argc, char *argv[]) {
     char wordBuffer[1024];
     int lineNumber = 0; // count words as they are read
 
-    while(getWord(wordBuffer, inFile)) {
+    // while (isLine)
+    //  getWords
+    //    foreach (findWord)
+
+    while(getWord(wordBuffer, inFile, &lineNumber)) {
       lineNumber++; // TODO - CHANGE THIS TO GET LINE NUMBER OF FILE
-      insertNumber(findWord(wordBuffer), lineNumber);
+      insertNumber(findWord(wordBuffer), &lineNumber);
     }
 
     printf("Printing concordance...\n");
