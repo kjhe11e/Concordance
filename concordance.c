@@ -68,18 +68,26 @@ int getWord(char *w, FILE* inFile, int *lineNumber) {
   // skip non-alphabetic chars, look for newlines to update lineNumber
   while((c = fgetc(inFile)) != EOF && !isalpha(c)) {
     if(c == '\n') {
+      printf("Line with no valid words: %d\n", *lineNumber);
       (*lineNumber)++;
-      printf("LineNumber is %d\n", *lineNumber);
     }
   }
+
   if(c == EOF) {
     return false;
   }
   else {
     *w++ = tolower(c);
     // get alphabetic chars
-    while((c = fgetc(inFile)) != EOF && isalpha(c)) {
-      *w++ = tolower(c);
+    // TODO - FIX THIS LINE TO CHECK FOR NEWLINE
+    while( (c = fgetc(inFile)) != EOF && (isalpha(c) || (c == '\n')) ) {
+      if(c == '\n') {
+        (*lineNumber)++;
+        break;
+      }
+      else {
+        *w++ = tolower(c);
+      }
     }
     *w = '\0';  // null-terminate string
     return true;
@@ -178,14 +186,10 @@ int main(int argc, char *argv[]) {
     printf("======================================\n");
 
     char wordBuffer[1024];
-    int lineNumber = 0; // count words as they are read
-
-    // while (isLine)
-    //  getWords
-    //    foreach (findWord)
+    int lineNumber = 1; // count words as they are read
 
     while(getWord(wordBuffer, inFile, &lineNumber)) {
-      lineNumber++; // TODO - CHANGE THIS TO GET LINE NUMBER OF FILE
+      //lineNumber++; // TODO - CHANGE THIS TO GET LINE NUMBER OF FILE
       insertNumber(findWord(wordBuffer), &lineNumber);
     }
 
