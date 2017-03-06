@@ -95,22 +95,42 @@ void printConcordance(void) {
   }
 }
 
+numberNode *makeNumberNode(int n) {
+  // TODO
+  numberNode *tmp;
+  tmp = (numberNode *) malloc(sizeof(numberNode));
+  tmp->number = n;
+  tmp->link = NULL;
+  return tmp;
+}
+
+void insertNumber(wordNode *w, int n) {
+  if(w->numberHead != NULL) {
+    w->numberTail->link = makeNumberNode(n);
+    w->numberTail = w->numberTail->link;
+  }
+  else {
+    w->numberHead = w->numberTail = makeNumberNode(n);
+  }
+}
+
 // Looks through list of words for the word specified by wordBuffer.
-// Ff word is not found, then a new wordNode is created and inserted into
+// If word is not found, then a new wordNode is created and inserted into
 // the list of words. A pointer to the wordNode (newly created or already
 // existing) is returned.
 wordNode *findWord(char *wordBuffer) {
   if(concordance == NULL) {
     printf("Concordance is NULL\n");
-    concordance = makeWordNode(wordBuffer);
+    wordNode *tmp;
+    tmp = makeWordNode(wordBuffer);
+    concordance = tmp;
     printf("Concordance is now: %s\n", concordance->word);
-    return concordance;
+    return tmp;
   }
   else {
     wordNode *tmp;
     int found = 0;
     for(tmp = concordance; tmp != NULL; tmp = tmp->link) {
-      //find here
       if(strcmp(tmp->word, wordBuffer) == 0) {
         printf("Found wordNode: %s\n", tmp->word);
         found = 1;
@@ -124,30 +144,11 @@ wordNode *findWord(char *wordBuffer) {
       while(tmp->link != NULL) {
         tmp = tmp->link;
       }
-
       tmp->link = makeWordNode(wordBuffer);
+      return tmp;
     }
     printConcordance();
-    return concordance;
-  }
-}
-
-numberNode *makeNumberNode(int n) {
-  // TODO
-  numberNode *tmp;
-  tmp = (numberNode *) malloc(sizeof(numberNode));
-  tmp->number = n;
-  tmp->link = NULL;
-  return tmp;
-}
-
-void insertNumber(wordNode *w, int n) {
-  if(w->numberHead) {
-    w->numberTail->link = makeNumberNode(n);
-    w->numberTail = w->numberTail->link;
-  }
-  else {
-    w->numberHead = w->numberTail = makeNumberNode(n);
+    //return concordance;
   }
 }
 
@@ -170,11 +171,11 @@ int main(int argc, char *argv[]) {
     printf("======================================\n");
 
     char wordBuffer[1024];
-    int wordNumber = 0; // count words as they are read
+    int lineNumber = 0; // count words as they are read
 
     while(getWord(wordBuffer, inFile)) {
-      wordNumber++;
-      insertNumber(findWord(wordBuffer), wordNumber);
+      lineNumber++; // TODO - CHANGE THIS TO GET LINE NUMBER OF FILE
+      insertNumber(findWord(wordBuffer), lineNumber);
     }
 
     printf("Printing concordance...\n");
