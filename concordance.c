@@ -168,9 +168,21 @@ wordNode *findWord(char *wordBuffer) {
       tmp->link = makeWordNode(wordBuffer);
       return tmp;
     }
-    printConcordance();
+    //printConcordance();
     //return concordance;
   }
+}
+
+int isValidWord(char* token) {
+  int i = 0;
+  while(token[i]){
+    if(!isalpha(token[i])){
+      printf("%s is NOT VALID\n", token);
+      return 0;
+    }
+    i++;
+  }
+  return 1;
 }
 
 int main(int argc, char *argv[]) {
@@ -195,17 +207,26 @@ int main(int argc, char *argv[]) {
     int lineNumber = 1; // count words as they are read
     char lineBuffer[10000];
     char* token;
-    const char delims[2] = " ";
+    const char delims[2] = " -";
 
     //while(getWord(wordBuffer, inFile, &lineNumber)) {
     while(fgets(lineBuffer, sizeof(lineBuffer), inFile)) {
       printf("LineNumber %d\n", lineNumber);
       lineNumber++;
-      // tokenize lineBuffer, and set wordBuffer = lineBuffer[i].
+
       //while((token = strtok(lineBuffer, delims)) != NULL)
-      token = strtok(lineBuffer, delims);
+
+      token = strtok(lineBuffer, delims); //strtok should NOT be used...
       while(token != NULL) {
-        printf("token is %s\n", token);
+        char *newline = strchr( token, '\n' );
+        if ( newline ) {
+          *newline = 0;
+        }
+        printf("token is '%s'\n", token);
+
+        // *** NEED TO VALIDATE STRING HERE ***
+        //insertNumber(findWord(token), lineNumber);
+
         token = strtok(NULL, delims);
       }
 
