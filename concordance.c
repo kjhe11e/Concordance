@@ -147,7 +147,11 @@ void insertNumber(wordNode *w, int n) {
 // If word is not found, then a new wordNode is created and inserted into
 // the list of words. A pointer to the wordNode (newly created or already
 // existing) is returned.
-wordNode *findWord(char *wordBuffer) {  
+wordNode *findWord(char *wordBuffer) {
+  // make lowercase
+  for(int k = 0; k < strlen(wordBuffer); k++) {
+    wordBuffer[k] = tolower(wordBuffer[k]);
+  }
   if(concordance == NULL) {
     printf("Concordance is NULL\n");
     wordNode *tmp;
