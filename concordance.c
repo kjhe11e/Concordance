@@ -126,27 +126,35 @@ numberNode *makeNumberNode(int n) {
 }
 
 void insertNumber(wordNode *w, int n) {
-  if(w->numberHead != NULL) {
+  if(w->numberHead == NULL) {
+    w->numberHead = w->numberTail = makeNumberNode(n);
+    printf("Wordnode %s is on lineNumber %d\n\n", w->word, n);
+  }
+  else {
+    w->numberTail->link = makeNumberNode(n);
+    w->numberTail = w->numberTail->link;
+  }
+  /*if(w->numberHead != NULL) {
     w->numberTail->link = makeNumberNode(n);
     w->numberTail = w->numberTail->link;
   }
   else {
     w->numberHead = w->numberTail = makeNumberNode(n);
-  }
+  }*/
 }
 
 // Looks through list of words for the word specified by wordBuffer.
 // If word is not found, then a new wordNode is created and inserted into
 // the list of words. A pointer to the wordNode (newly created or already
 // existing) is returned.
-wordNode *findWord(char *wordBuffer) {
+wordNode *findWord(char *wordBuffer) {  
   if(concordance == NULL) {
     printf("Concordance is NULL\n");
     wordNode *tmp;
     tmp = makeWordNode(wordBuffer);
     concordance = tmp;
     printf("Concordance is now: %s\n", concordance->word);
-    return tmp;
+    return concordance;
   }
   else {
     wordNode *tmp;
@@ -164,13 +172,24 @@ wordNode *findWord(char *wordBuffer) {
       tmp = concordance;
       while(tmp->link != NULL) {
         tmp = tmp->link;
-      }
+      } // now tmp->link == NULL
       tmp->link = makeWordNode(wordBuffer);
-      return tmp;
+      printf("made %s\n", tmp->link->word);
+      return tmp->link;
     }
     //printConcordance();
     //return concordance;
   }
+}
+
+int validateToken(char* tok) {
+  int i = 0;
+  for(i = 0; i < strlen(tok) - 1; i++) {
+    if(!isalpha(tok[i])){
+      return 0;
+    }
+  }
+  return 1;
 }
 
 int main(int argc, char *argv[]) {
@@ -192,25 +211,40 @@ int main(int argc, char *argv[]) {
     printf("======================================\n");
 
     char wordBuffer[1024];
-    int lineNumber = 1; // count words as they are read
+    int lineNumber = 0; // count words as they are read
     char lineBuffer[10000];
     char* token;
     const char delims[2] = " -";
+    int j = 0;
+    wordNode *tmp;
 
     //while(getWord(wordBuffer, inFile, &lineNumber)) {
     while(fgets(lineBuffer, sizeof(lineBuffer), inFile)) {
-      printf("LineNumber %d\n", lineNumber);
       lineNumber++;
+      printf("LineNumber %d\n", lineNumber);
 
       //while((token = strtok(lineBuffer, delims)) != NULL)
 
-      token = strtok(lineBuffer, delims); //strtok should NOT be used...
+      token = strtok(lineBuffer, delims); // strtok has known issues... use carefully
       while(token != NULL) {
         char *newline = strchr( token, '\n' );
         if ( newline ) {
           *newline = 0;
         }
-        printf("token is '%s'\n", token);
+        printf("TOKEN is '%s'\n", token);
+        j = validateToken(token);
+        if(j == 1) {
+          printf("Token %s is valid on lineNum %d.\n", token, lineNumber);
+          tmp = findWord(token);
+          printf("TMP->word is %s\n\n", tmp->word);
+          //insertNumber(findWord(token), lineNumber);
+          printf("LiadsfasdfneNumber is %d for %s\n", lineNumber, tmp->word);
+          insertNumber(tmp, lineNumber);
+        }
+        else {
+          printf("Token %s is INVALID. Discarding.\n", token);
+        }
+
 
         // *** NEED TO VALIDATE STRING HERE ***
         //insertNumber(findWord(token), lineNumber);
