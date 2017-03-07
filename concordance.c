@@ -80,13 +80,19 @@ int getWord(char *w, FILE* inFile, int *lineNumber) {
     *w++ = tolower(c);
     // get alphabetic chars
     // TODO - FIX THIS LINE TO CHECK FOR NEWLINE
-    while( (c = fgetc(inFile)) != EOF && (isalpha(c) || (c == '\n')) ) {
-      if(c == '\n') {
+    //while( (c = fgetc(inFile)) != EOF && (isalpha(c) || (c == '\n')) ) {
+    while((c = fgetc(inFile)) != EOF) {
+      //if(c != ' ' && c != '\n') {
+      if (c == '\n') {
+        printf("Passed line %d\n", *lineNumber);
         (*lineNumber)++;
         break;
       }
-      else {
+      else if(isalpha(c)) {
         *w++ = tolower(c);
+      }
+      else if (c == ' ' || c == '\t' || c == '\v') {
+        break;
       }
     }
     *w = '\0';  // null-terminate string
@@ -119,13 +125,13 @@ numberNode *makeNumberNode(int n) {
   return tmp;
 }
 
-void insertNumber(wordNode *w, int *n) {
+void insertNumber(wordNode *w, int n) {
   if(w->numberHead != NULL) {
-    w->numberTail->link = makeNumberNode(*n);
+    w->numberTail->link = makeNumberNode(n);
     w->numberTail = w->numberTail->link;
   }
   else {
-    w->numberHead = w->numberTail = makeNumberNode(*n);
+    w->numberHead = w->numberTail = makeNumberNode(n);
   }
 }
 
@@ -187,10 +193,23 @@ int main(int argc, char *argv[]) {
 
     char wordBuffer[1024];
     int lineNumber = 1; // count words as they are read
+    char lineBuffer[10000];
+    char* token;
+    const char delims[2] = " ";
 
-    while(getWord(wordBuffer, inFile, &lineNumber)) {
-      //lineNumber++; // TODO - CHANGE THIS TO GET LINE NUMBER OF FILE
-      insertNumber(findWord(wordBuffer), &lineNumber);
+    //while(getWord(wordBuffer, inFile, &lineNumber)) {
+    while(fgets(lineBuffer, sizeof(lineBuffer), inFile)) {
+      printf("LineNumber %d\n", lineNumber);
+      lineNumber++;
+      // tokenize lineBuffer, and set wordBuffer = lineBuffer[i].
+      //while((token = strtok(lineBuffer, delims)) != NULL)
+      token = strtok(lineBuffer, delims);
+      while(token != NULL) {
+        printf("token is %s\n", token);
+        token = strtok(NULL, delims);
+      }
+
+      //insertNumber(findWord(wordBuffer), &lineNumber);
     }
 
     printf("Printing concordance...\n");
