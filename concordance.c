@@ -37,7 +37,7 @@ wordNode *makeWordNode(char* w) {
   return tmp;
 }
 
-int tokenizeFile(FILE* inFile, char *word) {
+/*int tokenizeFile(FILE* inFile, char *word) {
   printf("Tokenizing file...\n");
   const char *delimiter_chars = " \n";
   char buffer[BUFFER_SIZE];
@@ -61,7 +61,7 @@ int tokenizeFile(FILE* inFile, char *word) {
     }
     return true;
   }
-}
+}*/
 
 int getWord(char *w, FILE* inFile, int *lineNumber) {
   char c;
@@ -171,18 +171,6 @@ wordNode *findWord(char *wordBuffer) {
     //printConcordance();
     //return concordance;
   }
-}
-
-int isValidWord(char* token) {
-  int i = 0;
-  while(token[i]){
-    if(!isalpha(token[i])){
-      printf("%s is NOT VALID\n", token);
-      return 0;
-    }
-    i++;
-  }
-  return 1;
 }
 
 int main(int argc, char *argv[]) {
