@@ -42,7 +42,7 @@ int getWord(char *w, FILE* inFile, int *lineNumber) {
   // skip non-alphabetic chars, look for newlines to update lineNumber
   while((c = fgetc(inFile)) != EOF && !isalpha(c)) {
     if(c == '\n') {
-      printf("Line with no valid words: %d\n", *lineNumber);
+      //printf("Line with no valid words: %d\n", *lineNumber);
       (*lineNumber)++;
     }
   }
@@ -54,7 +54,7 @@ int getWord(char *w, FILE* inFile, int *lineNumber) {
     *w++ = tolower(c);
     while((c = fgetc(inFile)) != EOF) {
       if (c == '\n') {
-        printf("Passed line %d\n", *lineNumber);
+        //printf("Passed line %d\n", *lineNumber);
         (*lineNumber)++;
         break;
       }
@@ -79,7 +79,7 @@ void printWord(wordNode *w) {
   printf("\n");
 }
 
-void printConcordance(void) {
+void printConcordanceNonAlphabetical(void) {
   wordNode *w;
   for(w = concordance; w != NULL; w = w->link) {
     printWord(w);
@@ -97,7 +97,7 @@ numberNode *makeNumberNode(int n) {
 void insertNumber(wordNode *w, int n) {
   if(w->numberHead == NULL) {
     w->numberHead = w->numberTail = makeNumberNode(n);
-    printf("Wordnode %s is on lineNumber %d\n\n", w->word, n);
+    //printf("Wordnode %s is on lineNumber %d\n\n", w->word, n);
   }
   else {
     w->numberTail->link = makeNumberNode(n);
@@ -115,11 +115,11 @@ wordNode *findWord(char *wordBuffer) {
     wordBuffer[k] = tolower(wordBuffer[k]);
   }
   if(concordance == NULL) {
-    printf("Concordance is NULL\n");
+    //printf("Concordance is NULL\n");
     wordNode *tmp;
     tmp = makeWordNode(wordBuffer);
     concordance = tmp;
-    printf("Concordance is now: %s\n", concordance->word);
+    //printf("Concordance is now: %s\n", concordance->word);
     return concordance;
   }
   else {
@@ -127,13 +127,13 @@ wordNode *findWord(char *wordBuffer) {
     int found = 0;
     for(tmp = concordance; tmp != NULL; tmp = tmp->link) {
       if(strcmp(tmp->word, wordBuffer) == 0) {
-        printf("Found wordNode: %s\n", tmp->word);
+        //printf("Found wordNode: %s\n", tmp->word);
         found = 1;
         return tmp;
       }
     }
     if(found == 0) {
-      printf("%s not found. Creating...\n", wordBuffer);
+      //printf("%s not found. Creating...\n", wordBuffer);
       wordNode *tmp;
       tmp = concordance;
       while(tmp->link != NULL) {
@@ -153,6 +153,47 @@ int validateToken(char* tok) {
     }
   }
   return 1;
+}
+
+/*void merge(wordNode *output, int size1, int size2) {
+  wordNode temp[size1 + size2];
+  int ptr1 = 0, ptr2 = 0;
+  while(ptr1 + ptr2 < size1 + size2) {
+    if(ptr1 < size1 && output[ptr1] <= output[size1 + ptr2] || ptr1 < size1 && ptr2 >= size2) {
+      temp[ptr1 + ptr2] = output[ptr++];
+    }
+    if(ptr2 < size2 && output[size1 + ptr2] < output[ptr1] || ptr2 < size2 && ptr1 >= size1) {
+      output[ptr1 + ptr2] = output[size1 + ptr2++];
+    }
+  }
+  for(int i = 0; i < size1 + size2; i++) {
+    output[i] = temp[i];
+  }
+}*/
+
+void mergeSort(wordNode* output, int size) {
+  if(size == 1) {
+    return;
+  }
+  int size1 = size/2, size2 = size-size1;
+  mergeSort(output, size1);
+  mergeSort(output + size1, size2);
+//  merge(output, size1, size2);
+}
+
+void printSortedConcordance(wordNode *head, int size) {
+  //wordNode output[size];
+  int i = 0;
+  wordNode *tmp;
+  tmp = head;
+  while(tmp->link != NULL) {
+    //*output[i] = *tmp;
+    tmp = tmp->link;
+    i++;
+    //printf("output at %d is %s\n", i, tmp->word);
+  }
+
+  //mergeSort(*output, i);
 }
 
 int main(int argc, char *argv[]) {
@@ -179,11 +220,12 @@ int main(int argc, char *argv[]) {
     char* token;
     const char delims[2] = " -";
     int j = 0;
+    int nodeCount = 0;
     wordNode *tmp;
 
     while(fgets(lineBuffer, sizeof(lineBuffer), inFile)) {
       lineNumber++;
-      printf("LineNumber %d\n", lineNumber);
+      //printf("LineNumber %d\n", lineNumber);
 
       token = strtok(lineBuffer, delims); // strtok has known issues... use carefully
       while(token != NULL) {
@@ -194,17 +236,21 @@ int main(int argc, char *argv[]) {
         j = validateToken(token);
         if(j == 1) {
           tmp = findWord(token);
+          nodeCount++;
           insertNumber(tmp, lineNumber);
         }
         else {
-          printf("Token %s is INVALID. Discarding.\n", token);
+          //printf("Token %s is INVALID. Discarding.\n", token);
         }
         token = strtok(NULL, delims);
       }
     }
 
+    printSortedConcordance(concordance, nodeCount);
+    //printf("Nodecount is %d\n", nodeCount);
+
     printf("Printing concordance...\n");
-    printConcordance();
+    printConcordanceNonAlphabetical();
     fclose(inFile);
   }
   else {
