@@ -26,6 +26,15 @@ typedef struct wordNode {
 
 wordNode *concordance = NULL;
 
+wordNode *makeWordNode(char* w);
+int getWord(char *w, FILE* inFile, int *lineNumber);
+void printWord(wordNode *w);
+void printConcordanceNonAlphabetical(void);
+numberNode *makeNumberNode(int n);
+void insertNumber(wordNode *w, int n);
+wordNode *findWord(char *wordBuffer);
+int validateToken(char* tok);
+
 wordNode *makeWordNode(char* w) {
   wordNode *tmp;
   tmp = (wordNode *) malloc(sizeof(wordNode));
@@ -155,47 +164,6 @@ int validateToken(char* tok) {
   return 1;
 }
 
-/*void merge(wordNode *output, int size1, int size2) {
-  wordNode temp[size1 + size2];
-  int ptr1 = 0, ptr2 = 0;
-  while(ptr1 + ptr2 < size1 + size2) {
-    if(ptr1 < size1 && output[ptr1] <= output[size1 + ptr2] || ptr1 < size1 && ptr2 >= size2) {
-      temp[ptr1 + ptr2] = output[ptr++];
-    }
-    if(ptr2 < size2 && output[size1 + ptr2] < output[ptr1] || ptr2 < size2 && ptr1 >= size1) {
-      output[ptr1 + ptr2] = output[size1 + ptr2++];
-    }
-  }
-  for(int i = 0; i < size1 + size2; i++) {
-    output[i] = temp[i];
-  }
-}*/
-
-void mergeSort(wordNode* output, int size) {
-  if(size == 1) {
-    return;
-  }
-  int size1 = size/2, size2 = size-size1;
-  mergeSort(output, size1);
-  mergeSort(output + size1, size2);
-//  merge(output, size1, size2);
-}
-
-void printSortedConcordance(wordNode *head, int size) {
-  //wordNode output[size];
-  int i = 0;
-  wordNode *tmp;
-  tmp = head;
-  while(tmp->link != NULL) {
-    //*output[i] = *tmp;
-    tmp = tmp->link;
-    i++;
-    //printf("output at %d is %s\n", i, tmp->word);
-  }
-
-  //mergeSort(*output, i);
-}
-
 int main(int argc, char *argv[]) {
   printf("Concordance program.\n");
   int i = 0;
@@ -225,7 +193,6 @@ int main(int argc, char *argv[]) {
 
     while(fgets(lineBuffer, sizeof(lineBuffer), inFile)) {
       lineNumber++;
-      //printf("LineNumber %d\n", lineNumber);
 
       token = strtok(lineBuffer, delims); // strtok has known issues... use carefully
       while(token != NULL) {
@@ -246,12 +213,19 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    printSortedConcordance(concordance, nodeCount);
-    //printf("Nodecount is %d\n", nodeCount);
+    wordNode *counter = concordance;
+    int count = 0;
+    while(counter != NULL){
+      printf("COUNTER %s\n", counter->word);
+      counter = counter->link;
+      count++;
+    }
+    printf("COUNT IS %d\n", count);
+    //qsort( concordance, sizeof(wordNode)/sizeof(wordNode *), sizeof(concordance), comp);
 
     printf("Printing concordance...\n");
     printConcordanceNonAlphabetical();
-    fclose(inFile);
+
   }
   else {
     printf("Could not open file %s, please make sure the file exists.\n", inputFile);
