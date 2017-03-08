@@ -164,6 +164,25 @@ int validateToken(char* tok) {
   return 1;
 }
 
+int comp(const void *v1, const void *v2){
+  const wordNode *p1 = (wordNode *)v1;
+  const wordNode *p2 = (wordNode *)v2;
+  printf("Comparing %s to %s\n", p1->word, p2->word);
+  //if(p1->word < p2->word){
+  if(strcmp(p1->word, p2->word) > 0) {
+    printf("%s is < %s\n", p1->word, p2->word);
+    return 1;
+  }
+  //else if (p1->word > p2->word) {
+  else if(strcmp(p1->word, p2->word) < 0) {
+    printf("%s is > %s\n", p1->word, p2->word);
+    return -1;
+  }
+  else {
+    return 0;
+  }
+}
+
 int main(int argc, char *argv[]) {
   printf("Concordance program.\n");
   int i = 0;
@@ -216,15 +235,32 @@ int main(int argc, char *argv[]) {
     wordNode *counter = concordance;
     int count = 0;
     while(counter != NULL){
-      printf("COUNTER %s\n", counter->word);
       counter = counter->link;
       count++;
     }
-    printf("COUNT IS %d\n", count);
     //qsort( concordance, sizeof(wordNode)/sizeof(wordNode *), sizeof(concordance), comp);
 
     printf("Printing concordance...\n");
     printConcordanceNonAlphabetical();
+    wordNode array[count];
+    counter = concordance;
+    int n = 0;
+    while(counter != NULL) {
+      memcpy(&array[n], counter, sizeof(wordNode));
+      counter = counter->link;
+      n++;
+    }
+    for(int i = 0; i < n; i++) {
+      printf("Token %s\n", array[i].word);
+    }
+    qsort(array, n, sizeof(wordNode), comp);
+    for(int i = 0; i < n; i++) {
+      printf("Token %s\n", array[i].word);
+    }
+    // for each wordNode:
+    //  push to array
+    // then sort array
+    // then print
 
   }
   else {
