@@ -28,8 +28,6 @@ wordNode *concordance = NULL;
 
 wordNode *makeWordNode(char* w);
 int getWord(char *w, FILE* inFile, int *lineNumber);
-void printWord(wordNode *w);
-void printConcordanceNonAlphabetical(void);
 numberNode *makeNumberNode(int n);
 void insertNumber(wordNode *w, int n);
 wordNode *findWord(char *wordBuffer);
@@ -76,22 +74,6 @@ int getWord(char *w, FILE* inFile, int *lineNumber) {
     }
     *w = '\0';  // null-terminate string
     return true;
-  }
-}
-
-void printWord(wordNode *w) {
-  numberNode *n;
-  printf("%s", w->word);
-  for(n = w->numberHead; n; n = n->link) {
-    printf(" %d", n->number);
-  }
-  printf("\n");
-}
-
-void printConcordanceNonAlphabetical(void) {
-  wordNode *w;
-  for(w = concordance; w != NULL; w = w->link) {
-    printWord(w);
   }
 }
 
@@ -183,6 +165,17 @@ int comp(const void *v1, const void *v2){
   }
 }
 
+void printConcordance(wordNode array[], int n) {
+  for(int j = 0; j < n; j++){
+    numberNode *p;
+    printf("%s ", array[j].word);
+    for( p = array[j].numberHead; p; p = p->link) {
+      printf(" %d", p->number);
+    }
+    printf("\n");
+  }
+}
+
 int main(int argc, char *argv[]) {
   printf("Concordance program.\n");
   int i = 0;
@@ -226,7 +219,7 @@ int main(int argc, char *argv[]) {
           insertNumber(tmp, lineNumber);
         }
         else {
-          //printf("Token %s is INVALID. Discarding.\n", token);
+          // token is invalid.
         }
         token = strtok(NULL, delims);
       }
@@ -241,7 +234,6 @@ int main(int argc, char *argv[]) {
     //qsort( concordance, sizeof(wordNode)/sizeof(wordNode *), sizeof(concordance), comp);
 
     printf("Printing concordance...\n");
-    printConcordanceNonAlphabetical();
     wordNode array[count];
     counter = concordance;
     int n = 0;
@@ -257,6 +249,8 @@ int main(int argc, char *argv[]) {
     for(int i = 0; i < n; i++) {
       printf("Token %s\n", array[i].word);
     }
+
+    printConcordance(array, n);
     // for each wordNode:
     //  push to array
     // then sort array
