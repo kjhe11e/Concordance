@@ -1,5 +1,5 @@
-all: main.c concordance.o concordance.h
-	gcc -o concordance.h main.c
+all: main.c
+	gcc -o main main.c
 clean:
 	rm -rf *.0
 	rm main
