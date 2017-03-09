@@ -9,16 +9,15 @@
 int main(int argc, char *argv[]) {
 
   if(argc > 2) {
-    //printf("Program only supports one input file at this time. Exiting\n");
+    //printf("Program only supports one input file at this time.\n");
     return 0;
   }
 
   FILE* inFile;
   char* inputFile = argv[1]; // input file is second-passed argument
-
   inFile = fopen(inputFile, "r"); // attempt to open the file for read
-  if(inFile != NULL) {  // then file open was successful
 
+  if(inFile != NULL) {  // then file open was successful
     int lineNumber = 0; // count words as they are read
     char lineBuffer[10000];
     char* token;
@@ -38,7 +37,7 @@ int main(int argc, char *argv[]) {
         }
         j = validateToken(token);
         if(j == 1) {
-          tmp = findWord(token);
+          tmp = findWord(token);  // Time complexity is O(n * m), where 'n' is size of concordance and 'm' is length of word
           nodeCount++;
           insertNumber(tmp, lineNumber);
         }
@@ -49,18 +48,19 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    int concordanceSize = getConcordanceSize(concordance);
+    int concordanceSize = getConcordanceSize(concordance);  // Time complexity is O(n)
     wordNode array[concordanceSize];
 
     wordNode *counter = concordance;
     int n = 0;
+    // Convert concordance linked-list into array (for sorting)
     while(counter != NULL) {
       memcpy(&array[n], counter, sizeof(wordNode)); // convert linked-list to array
       counter = counter->link;
       n++;  // track size
     }
 
-    qsort(array, n, sizeof(wordNode), comp);
+    qsort(array, n, sizeof(wordNode), comp);  // leverage C standard library function 'qsort' to sort array
     printConcordance(array, n);
   }
   else {

@@ -85,6 +85,8 @@ void insertNumber(wordNode *w, int n) {
 // If word is not found, then a new wordNode is created and inserted into
 // the list of words. A pointer to the wordNode (newly created or already
 // existing) is returned.
+// - Time complexity is worst-case O(n * m), where 'n' = length of linked-list
+// and 'm' is length of the word.
 wordNode *findWord(char *wordBuffer) {
   // make word lowercase, application is case-insensitive
   for(int k = 0; k < strlen(wordBuffer); k++) {
@@ -156,6 +158,7 @@ int comp(const void *v1, const void *v2) {
 // Returns: int
 // This method counts the length of the linked-list by traversing the
 // wordNode links until the end of the linked-list is encountered.
+// - Time complexity is O(n), where 'n' is the size of the linked-list.
 int getConcordanceSize(wordNode *counter) {
   if(counter == NULL) {
     return 0;

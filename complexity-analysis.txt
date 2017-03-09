@@ -1,0 +1,11 @@
+Complexity analysis of the Concordance application:
+
+Time complexity (worst-case) = O(n * m), where 'n' is the size of the input
+and 'm' is the average word length. This is due to the 'findWord' method iterating
+through the concordance linked-list (O(n)) and, in the worst-case, comparing
+char* word values for each node in the linked-list (which is O(m) since we compare
+character by character). Thus we have O(n * m).
+
+Space complexity (worst-case) = O(n) since we store the words as a linked-list,
+which is O(n), and we convert the linked-list to an array for sorting, which also
+requires O(n) space.
