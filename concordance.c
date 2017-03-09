@@ -16,7 +16,6 @@ int getWord(char *w, FILE* inFile, int *lineNumber) {
   // skip non-alphabetic chars, look for newlines to update lineNumber
   while((c = fgetc(inFile)) != EOF && !isalpha(c)) {
     if(c == '\n') {
-      //printf("Line with no valid words: %d\n", *lineNumber);
       (*lineNumber)++;
     }
   }
@@ -28,7 +27,6 @@ int getWord(char *w, FILE* inFile, int *lineNumber) {
     *w++ = tolower(c);
     while((c = fgetc(inFile)) != EOF) {
       if (c == '\n') {
-        //printf("Passed line %d\n", *lineNumber);
         (*lineNumber)++;
         break;
       }
@@ -55,7 +53,6 @@ numberNode *makeNumberNode(int n) {
 void insertNumber(wordNode *w, int n) {
   if(w->numberHead == NULL) {
     w->numberHead = w->numberTail = makeNumberNode(n);
-    //printf("Wordnode %s is on lineNumber %d\n\n", w->word, n);
   }
   else {
     w->numberTail->link = makeNumberNode(n);
@@ -85,13 +82,11 @@ wordNode *findWord(char *wordBuffer) {
     int found = 0;
     for(tmp = concordance; tmp != NULL; tmp = tmp->link) {
       if(strcmp(tmp->word, wordBuffer) == 0) {
-        //printf("Found wordNode: %s\n", tmp->word);
         found = 1;
         return tmp;
       }
     }
     if(found == 0) {
-      //printf("%s not found. Creating...\n", wordBuffer);
       wordNode *tmp;
       tmp = concordance;
       while(tmp->link != NULL) {
@@ -116,15 +111,11 @@ int validateToken(char* tok) {
 int comp(const void *v1, const void *v2) {
   const wordNode *p1 = (wordNode *)v1;
   const wordNode *p2 = (wordNode *)v2;
-  printf("Comparing %s to %s\n", p1->word, p2->word);
-  //if(p1->word < p2->word){
+
   if(strcmp(p1->word, p2->word) > 0) {
-    printf("%s is < %s\n", p1->word, p2->word);
     return 1;
   }
-  //else if (p1->word > p2->word) {
   else if(strcmp(p1->word, p2->word) < 0) {
-    printf("%s is > %s\n", p1->word, p2->word);
     return -1;
   }
   else {
@@ -135,7 +126,7 @@ int comp(const void *v1, const void *v2) {
 void printConcordance(wordNode array[], int n) {
   for(int j = 0; j < n; j++){
     numberNode *p;
-    printf("%s ", array[j].word);
+    printf("%s", array[j].word);
     for( p = array[j].numberHead; p; p = p->link) {
       printf(" %d", p->number);
     }
