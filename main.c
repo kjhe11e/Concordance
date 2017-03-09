@@ -3,16 +3,10 @@
 * Seattle, WA
 */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>  // isupper, tolower, etc...
-
 #include "concordance.h"
 #include "concordance.c"
 
 int main(int argc, char *argv[]) {
-  int i = 0;
 
   if(argc > 2) {
     //printf("Program only supports one input file at this time. Exiting\n");
@@ -20,26 +14,25 @@ int main(int argc, char *argv[]) {
   }
 
   FILE* inFile;
-  char* inputFile = argv[1];
+  char* inputFile = argv[1]; // input file is second-passed argument
 
-  inFile = fopen(inputFile, "r");
-  if(inFile != NULL) {
+  inFile = fopen(inputFile, "r"); // attempt to open the file for read
+  if(inFile != NULL) {  // then file open was successful
 
-    char wordBuffer[1024];
     int lineNumber = 0; // count words as they are read
     char lineBuffer[10000];
     char* token;
-    const char delims[2] = " -";
+    const char delims[2] = " -";  // delimiter chars are spaces and hyphens
     int j = 0;
     int nodeCount = 0;
     wordNode *tmp;
 
     while(fgets(lineBuffer, sizeof(lineBuffer), inFile)) {
-      lineNumber++;
+      lineNumber++; // line is read, so increase line number
 
-      token = strtok(lineBuffer, delims); // strtok has known issues... use carefully
+      token = strtok(lineBuffer, delims); // strtok has known limitations; modifies first arg; not thread safe
       while(token != NULL) {
-        char *newline = strchr( token, '\n' );
+        char *newline = strchr( token, '\n' );  // if last token in line, replace newline char with null char to null-terminate the string
         if ( newline ) {
           *newline = 0;
         }
@@ -50,26 +43,21 @@ int main(int argc, char *argv[]) {
           insertNumber(tmp, lineNumber);
         }
         else {
-          // token is invalid.
+          // token is invalid. (Either alert user here or do nothing.)
         }
-        token = strtok(NULL, delims);
+        token = strtok(NULL, delims); // get next token
       }
     }
 
-    wordNode *counter = concordance;
-    int count = 0;
-    while(counter != NULL){
-      counter = counter->link;
-      count++;
-    }
+    int concordanceSize = getConcordanceSize(concordance);
+    wordNode array[concordanceSize];
 
-    wordNode array[count];
-    counter = concordance;
+    wordNode *counter = concordance;
     int n = 0;
     while(counter != NULL) {
-      memcpy(&array[n], counter, sizeof(wordNode));
+      memcpy(&array[n], counter, sizeof(wordNode)); // convert linked-list to array
       counter = counter->link;
-      n++;
+      n++;  // track size
     }
 
     qsort(array, n, sizeof(wordNode), comp);
