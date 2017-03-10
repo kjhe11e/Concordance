@@ -2,9 +2,13 @@ Complexity analysis of the Concordance application:
 
 Time complexity (worst-case) = O(n^2) due to use of C standard library's qsort
 function. However, this is only in rare cases such as when the concordance is passed
-in descending order. In general use, the average case time complexity is O(nlog(n)),
-where 'n' is the size of the concordance list.
+in descending order (which would be highly unlikely for this particular application,
+unless the input file was already organized in reverse-alphabetical order).
+For general use cases, for example when the input is an eBook, the average-case
+time complexity is O(nlog(n)), where 'n' is the size of the concordance list.
 
-Space complexity (worst-case) = O(n) since we store the words as a linked-list,
-which is O(n), and we convert the linked-list to an array for sorting, which also
-requires O(n) space.
+Space complexity = O(2n + log(n)) since we store the words as a linked-list
+which is O(n) space, we convert the linked-list to an array for sorting which also
+requires O(n) space, and we leverage C standard library's qsort method which requires
+log(n) space. Therefore our space complexity is O(2n), where 'n' is the size
+of the concordance.
