@@ -1,3 +1,8 @@
+/* Kyle Helle
+/  Concordance function implementations
+/  WordNode and NumberNode data types are defined in concordance.h
+*/
+
 #include "concordance.h"
 
 // Input: char* representing the word to create
