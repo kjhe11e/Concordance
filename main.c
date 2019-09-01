@@ -9,7 +9,7 @@
 int main(int argc, char *argv[]) {
 
   if(argc > 2) {
-    //printf("Program only supports one input file at this time.\n");
+    printf("Program only supports one input file at this time.\n");
     return 0;
   }
 
@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
     int lineNumber = 0; // count words as they are read
     char lineBuffer[10000];
     char* token;
-    const char delims[2] = " -";  // delimiter chars are spaces and hyphens
+    const char delims[2] = "-";  // delimiter chars are spaces and hyphens
     int j = 0;
     int nodeCount = 0;
     wordNode *tmp;
